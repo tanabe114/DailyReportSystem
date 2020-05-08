@@ -29,6 +29,14 @@
         </div>
     </div>
     <div class="container body-content">
+        @if (TempData["flush"] != null)
+        {
+            <br />
+            <div class="alert alert-success">
+                <strong>@TempData["flush"]</strong>
+            </div>
+        }
+
         @RenderBody()
         <hr />
         <footer>
