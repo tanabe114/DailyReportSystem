@@ -15,6 +15,7 @@ using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace DailyReportSystem.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class EmployeesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -113,6 +114,7 @@ namespace DailyReportSystem.Controllers
         }
 
         // GET: Employees/Create
+        [AllowAnonymous]
         public ActionResult Create()
         {
             return View(new EmployeesCreateViewModel());
@@ -122,6 +124,7 @@ namespace DailyReportSystem.Controllers
         // 過多ポスティング攻撃を防止するには、バインド先とする特定のプロパティを有効にしてください。
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "EmployeeName,Email,Password,AdminFlag")] EmployeesCreateViewModel model)
         {
@@ -308,6 +311,8 @@ namespace DailyReportSystem.Controllers
                 CreatedAt = applicationUser.CreatedAt,
                 UpdatedAt = applicationUser.UpdatedAt
             };
+
+            employee.Role = UserManager.IsInRole(applicationUser.Id, "Admin") ? "管理者" : "一般";
 
             return View(employee);
         }
