@@ -106,4 +106,8 @@ namespace DailyReportSystem
             return new ApplicationSignInManager(context.GetUserManager<ApplicationUserManager>(), context.Authentication);
         }
     }
+    public class ApplicationRole : IdentityRole
+    {
+
+    }
 }

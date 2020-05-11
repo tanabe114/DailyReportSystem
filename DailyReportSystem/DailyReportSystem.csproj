@@ -181,6 +181,14 @@
     <Compile Include="Migrations\202005070049513_AddEmployeesProperties.Designer.cs">
       <DependentUpon>202005070049513_AddEmployeesProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005110057498_AddApplicationRole.cs" />
+    <Compile Include="Migrations\202005110057498_AddApplicationRole.Designer.cs">
+      <DependentUpon>202005110057498_AddApplicationRole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005110150411_AddApplicationRole1.cs" />
+    <Compile Include="Migrations\202005110150411_AddApplicationRole1.Designer.cs">
+      <DependentUpon>202005110150411_AddApplicationRole1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EmployeeViewModels.cs" />
@@ -256,6 +264,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005070049513_AddEmployeesProperties.resx">
       <DependentUpon>202005070049513_AddEmployeesProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005110057498_AddApplicationRole.resx">
+      <DependentUpon>202005110057498_AddApplicationRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005110150411_AddApplicationRole1.resx">
+      <DependentUpon>202005110150411_AddApplicationRole1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
