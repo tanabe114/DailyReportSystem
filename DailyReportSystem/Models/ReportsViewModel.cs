@@ -70,7 +70,6 @@ namespace DailyReportSystem.Models
         [DataType(DataType.DateTime)]
         public DateTime? UpdatedAt { get; set; }
 
-        //このレポートを作成した人なら、「この日報を編集する」リンクを出すために使用。
         public bool isReportCreater { get; set; }
     }
 
