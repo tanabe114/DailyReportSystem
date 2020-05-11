@@ -107,6 +107,8 @@ namespace DailyReportSystem.Controllers
                 UpdatedAt = applicationUser.UpdatedAt
             };
 
+            employee.Role = UserManager.IsInRole(applicationUser.Id, "Admin") ? "管理者" : "一般";
+
             return View(employee);
         }
 
