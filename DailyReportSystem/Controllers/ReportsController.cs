@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using DailyReportSystem.Models;
+using Microsoft.AspNet.Identity;
 
 namespace DailyReportSystem.Controllers
 {
@@ -50,13 +51,25 @@ namespace DailyReportSystem.Controllers
             {
                 return HttpNotFound();
             }
-            return View(report);
+            ReportsDetailsViewModel detailsViewModel = new ReportsDetailsViewModel
+            {
+                Id = report.Id,
+                ReportDate = report.ReportDate,
+                Title = report.Title,
+                Content = report.Content,
+                CreatedAt = report.CreatedAt,
+                UpdatedAt = report.UpdatedAt,
+            };
+            detailsViewModel.EmployeeName = db.Users.Find(report.EmployeeId).EmployeeName;
+            detailsViewModel.isReportCreater = User.Identity.GetUserId() == report.EmployeeId;
+
+            return View(detailsViewModel);
         }
 
         // GET: Reports/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new ReportsCreateViewModel());
         }
 
         // POST: Reports/Create
@@ -64,16 +77,34 @@ namespace DailyReportSystem.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,EmployeeId,ReportDate,Title,Content,CreatedAt,UpdatedAt")] Report report)
+        public ActionResult Create([Bind(Include = "ReportDate,Title,Content")] ReportsCreateViewModel createViewModel)
         {
             if (ModelState.IsValid)
             {
+                Report report = new Report()
+                {
+                    ReportDate = createViewModel.ReportDate,
+                    Title = createViewModel.Title,
+                    Content = createViewModel.Content,
+                    //現在ログイン中のUserIdを取得し、EmployeeIdとして設定
+                    EmployeeId = User.Identity.GetUserId(),
+                    //作成時は現在の時刻に設定
+                    UpdatedAt = DateTime.Now,
+                    //作成時は現在の時刻に設定
+                    CreatedAt = DateTime.Now
+                };
+
+                //Contextに新しいオブジェクト追加
                 db.Reports.Add(report);
+                //実際のDBに反映
                 db.SaveChanges();
+                // TempDataにフラッシュメッセージを入れておく。
+                TempData["flush"] = "日報を登録しました。";
+                //indexにRedirect（ページ遷移）
                 return RedirectToAction("Index");
             }
 
-            return View(report);
+            return View(createViewModel);
         }
 
         // GET: Reports/Edit/5
