@@ -119,7 +119,20 @@ namespace DailyReportSystem.Controllers
             {
                 return HttpNotFound();
             }
-            return View(report);
+
+            //本人の日報でなければ表示しないように、それをEdit.cshtmlにTempDataで伝える。
+            if (report.EmployeeId != User.Identity.GetUserId())
+            {
+                TempData["wrong_person"] = "true";
+            }
+            ReportsEditViewModel editViewModel = new ReportsEditViewModel
+            {
+                Id = report.Id,
+                ReportDate = report.ReportDate,
+                Title = report.Title,
+                Content = report.Content
+            };
+            return View(editViewModel);
         }
 
         // POST: Reports/Edit/5
@@ -127,15 +140,23 @@ namespace DailyReportSystem.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,EmployeeId,ReportDate,Title,Content,CreatedAt,UpdatedAt")] Report report)
+        public ActionResult Edit([Bind(Include = "Id,ReportDate,Title,Content")] ReportsEditViewModel editViewModel)
         {
             if (ModelState.IsValid)
             {
+                Report report = db.Reports.Find(editViewModel.Id);
+                report.ReportDate = editViewModel.ReportDate;
+                report.Title = editViewModel.Title;
+                report.Content = editViewModel.Content;
+                report.UpdatedAt = DateTime.Now;
                 db.Entry(report).State = EntityState.Modified;
                 db.SaveChanges();
+
+                // TempDataにフラッシュメッセージを入れておく。
+                TempData["flush"] = "日報を編集しました。";
                 return RedirectToAction("Index");
             }
-            return View(report);
+            return View(editViewModel);
         }
 
         // GET: Reports/Delete/5
