@@ -24,6 +24,9 @@ namespace DailyReportSystem.Models
 
         [DisplayName("内容")]
         public string Content { get; set; }
+
+        [DisplayName("商談状況")]
+        public string NegotiationStatus { get; set; }
     }
 
     public class ReportsCreateViewModel
@@ -42,6 +45,20 @@ namespace DailyReportSystem.Models
         [DisplayName("内容")]
         [Required(ErrorMessage = "内容を入力してください。")]
         public string Content { get; set; }
+
+        [DisplayName("商談状況")]
+        [Required(ErrorMessage = "内容を入力してください。")]
+        public string NegotiationStatus { get; set; }
+
+        [DisplayName("出勤時刻")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? AttendanceTime { get; set; }
+
+        [DisplayName("退勤時刻")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? LeavingTime { get; set; }
     }
 
     public class ReportsDetailsViewModel
@@ -61,6 +78,19 @@ namespace DailyReportSystem.Models
 
         [DisplayName("内容")]
         public string Content { get; set; }
+
+        [DisplayName("商談状況")]
+        public string NegotiationStatus { get; set; }
+
+        [DisplayName("出勤時刻")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? AttendanceTime { get; set; }
+
+        [DisplayName("退勤時刻")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? LeavingTime { get; set; }
 
         [DisplayName("作成日付")]
         [DataType(DataType.DateTime)]
@@ -94,5 +124,18 @@ namespace DailyReportSystem.Models
         [Required(ErrorMessage = "内容を入力してください。")]
         public string Content { get; set; }
 
+        [DisplayName("商談状況")]
+        [Required(ErrorMessage = "内容を入力してください。")]
+        public string NegotiationStatus { get; set; }
+
+        [DisplayName("出勤時刻")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? AttendanceTime { get; set; }
+
+        [DisplayName("退勤時刻")]
+        [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:HH:mm}", ApplyFormatInEditMode = true)]
+        public DateTime? LeavingTime { get; set; }
     }
 }

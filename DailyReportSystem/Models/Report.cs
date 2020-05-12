@@ -30,6 +30,18 @@ namespace DailyReportSystem.Models
         [Required(ErrorMessage = "内容を入力してください。")]
         public string Content { get; set; }
 
+        [DisplayName("商談状況")]
+        //[Required(ErrorMessage = "内容を入力してください。")]
+        public string NegotiationStatus { get; set; }
+
+        [DisplayName("出勤時刻")]
+        [DataType(DataType.Time)]
+        public DateTime? AttendanceTime { get; set; }
+
+        [DisplayName("退勤時刻")]
+        [DataType(DataType.Time)]
+        public DateTime? LeavingTime { get; set; }
+
         [DisplayName("作成日付")]
         [DataType(DataType.DateTime)]
         public DateTime? CreatedAt { get; set; }

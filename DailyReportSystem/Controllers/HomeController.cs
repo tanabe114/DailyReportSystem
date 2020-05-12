@@ -32,7 +32,8 @@ namespace DailyReportSystem.Controllers
                     EmployeeName = db.Users.Find(report.EmployeeId).EmployeeName,
                     ReportDate = report.ReportDate,
                     Title = report.Title,
-                    Content = report.Content
+                    Content = report.Content,
+                    NegotiationStatus = report.NegotiationStatus
                 };
                 indexViewModels.Add(indexViewModel);
             }

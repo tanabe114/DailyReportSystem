@@ -194,6 +194,22 @@
     <Compile Include="Migrations\202005110431283_AddReportsToDbContext.Designer.cs">
       <DependentUpon>202005110431283_AddReportsToDbContext.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005110735026_AddReports.cs" />
+    <Compile Include="Migrations\202005110735026_AddReports.Designer.cs">
+      <DependentUpon>202005110735026_AddReports.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005120501529_AddReports1.cs" />
+    <Compile Include="Migrations\202005120501529_AddReports1.Designer.cs">
+      <DependentUpon>202005120501529_AddReports1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005120533433_AddReports2.cs" />
+    <Compile Include="Migrations\202005120533433_AddReports2.Designer.cs">
+      <DependentUpon>202005120533433_AddReports2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005120620136_AddReports3.cs" />
+    <Compile Include="Migrations\202005120620136_AddReports3.Designer.cs">
+      <DependentUpon>202005120620136_AddReports3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EmployeeViewModels.cs" />
@@ -282,6 +298,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005110431283_AddReportsToDbContext.resx">
       <DependentUpon>202005110431283_AddReportsToDbContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005110735026_AddReports.resx">
+      <DependentUpon>202005110735026_AddReports.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005120501529_AddReports1.resx">
+      <DependentUpon>202005120501529_AddReports1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005120533433_AddReports2.resx">
+      <DependentUpon>202005120533433_AddReports2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005120620136_AddReports3.resx">
+      <DependentUpon>202005120620136_AddReports3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

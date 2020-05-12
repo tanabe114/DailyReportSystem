@@ -31,7 +31,8 @@ namespace DailyReportSystem.Controllers
                     EmployeeName = db.Users.Find(report.EmployeeId).EmployeeName,
                     ReportDate = report.ReportDate,
                     Title = report.Title,
-                    Content = report.Content
+                    Content = report.Content,
+                    NegotiationStatus = report.NegotiationStatus
                 };
                 indexViewModels.Add(indexViewModel);
             }
@@ -57,6 +58,9 @@ namespace DailyReportSystem.Controllers
                 ReportDate = report.ReportDate,
                 Title = report.Title,
                 Content = report.Content,
+                NegotiationStatus = report.NegotiationStatus,
+                AttendanceTime = report.AttendanceTime,
+                LeavingTime = report.LeavingTime,
                 CreatedAt = report.CreatedAt,
                 UpdatedAt = report.UpdatedAt,
             };
@@ -77,7 +81,7 @@ namespace DailyReportSystem.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ReportDate,Title,Content")] ReportsCreateViewModel createViewModel)
+        public ActionResult Create([Bind(Include = "ReportDate,Title,Content,NegotiationStatus,AttendanceTime,LeavingTime")] ReportsCreateViewModel createViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -86,11 +90,11 @@ namespace DailyReportSystem.Controllers
                     ReportDate = createViewModel.ReportDate,
                     Title = createViewModel.Title,
                     Content = createViewModel.Content,
-                    //現在ログイン中のUserIdを取得し、EmployeeIdとして設定
+                    NegotiationStatus = createViewModel.NegotiationStatus,
                     EmployeeId = User.Identity.GetUserId(),
-                    //作成時は現在の時刻に設定
+                    AttendanceTime = createViewModel.AttendanceTime,
+                    LeavingTime = createViewModel.LeavingTime,
                     UpdatedAt = DateTime.Now,
-                    //作成時は現在の時刻に設定
                     CreatedAt = DateTime.Now
                 };
 
@@ -130,7 +134,10 @@ namespace DailyReportSystem.Controllers
                 Id = report.Id,
                 ReportDate = report.ReportDate,
                 Title = report.Title,
-                Content = report.Content
+                Content = report.Content,
+                NegotiationStatus = report.NegotiationStatus,
+                AttendanceTime = report.AttendanceTime,
+                LeavingTime = report.LeavingTime
             };
             return View(editViewModel);
         }
@@ -140,7 +147,7 @@ namespace DailyReportSystem.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,ReportDate,Title,Content")] ReportsEditViewModel editViewModel)
+        public ActionResult Edit([Bind(Include = "Id,ReportDate,Title,Content,NegotiationStatus,AttendanceTime,LeavingTime")] ReportsEditViewModel editViewModel)
         {
             if (ModelState.IsValid)
             {
@@ -148,6 +155,9 @@ namespace DailyReportSystem.Controllers
                 report.ReportDate = editViewModel.ReportDate;
                 report.Title = editViewModel.Title;
                 report.Content = editViewModel.Content;
+                report.NegotiationStatus = editViewModel.NegotiationStatus;
+                report.AttendanceTime = editViewModel.AttendanceTime;
+                report.LeavingTime = editViewModel.LeavingTime;
                 report.UpdatedAt = DateTime.Now;
                 db.Entry(report).State = EntityState.Modified;
                 db.SaveChanges();
@@ -157,32 +167,6 @@ namespace DailyReportSystem.Controllers
                 return RedirectToAction("Index");
             }
             return View(editViewModel);
-        }
-
-        // GET: Reports/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Report report = db.Reports.Find(id);
-            if (report == null)
-            {
-                return HttpNotFound();
-            }
-            return View(report);
-        }
-
-        // POST: Reports/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Report report = db.Reports.Find(id);
-            db.Reports.Remove(report);
-            db.SaveChanges();
-            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
