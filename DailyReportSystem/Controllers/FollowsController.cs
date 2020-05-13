@@ -34,7 +34,7 @@ namespace DailyReportSystem.Controllers
                 FollowsIndexViewModel indexViewModel = new FollowsIndexViewModel
                 {
                     Id = follow.Id,
-                    EmployeeName = db.Users.Find(follow.FollowId).EmployeeName
+                    FollowName = db.Users.Find(follow.FollowId).EmployeeName
                 };
                 indexViewModels.Add(indexViewModel);
             }
@@ -43,9 +43,28 @@ namespace DailyReportSystem.Controllers
         }
 
         // GET: Follows/Create
-        public ActionResult Create()
+        public ActionResult Create(string followId)
         {
-            return View();
+            //GET受信できてるか
+            if (followId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            //フォロー先IDが有効か
+            ApplicationUser applicationUser = db.Users.Find(followId);
+            if (applicationUser == null)
+            {
+                return HttpNotFound();
+            }
+
+            //ビューモデル生成
+            FollowsCreateViewModel followsCreateViewModel = new FollowsCreateViewModel {
+                UserId = User.Identity.GetUserId(),
+                FollowId = followId,
+                FollowName = db.Users.Find(followId).EmployeeName
+            };
+            return View(followsCreateViewModel);
         }
 
         // POST: Follows/Create
@@ -53,7 +72,7 @@ namespace DailyReportSystem.Controllers
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,EmployeeId,FollowId")] Follows follows)
+        public ActionResult Create([Bind(Include = "FollowId")] Follows follows)
         {
             if (ModelState.IsValid)
             {
