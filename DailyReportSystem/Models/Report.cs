@@ -31,7 +31,6 @@ namespace DailyReportSystem.Models
         public string Content { get; set; }
 
         [DisplayName("商談状況")]
-        //[Required(ErrorMessage = "内容を入力してください。")]
         public string NegotiationStatus { get; set; }
 
         [DisplayName("出勤時刻")]

@@ -4,26 +4,57 @@
     ViewBag.Title = "フォロー一覧";
 }
 
-<h2>フォローしている従業員</h2>
+<h2>フォローしている従業員一覧</h2>
 
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.EmployeeName)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
+@if (Model != null && Model.Count() > 0)
+{
+    <table class="table">
         <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EmployeeName)
-            </td>
-            <td>
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
+            <th>
+                @Html.DisplayNameFor(model => model.FollowName)
+            </th>
+            <th></th>
         </tr>
-    }
 
-</table>
+        @foreach (var item in Model.Select((Value, Index) => new { Value, Index }))
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Value.FollowName)
+                </td>
+                <td>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#@Html.DisplayFor(modelItem => item.Index)Modalid">フォロー解除</button>
+
+                    <div class="modal fade" id="@Html.DisplayFor(modelItem => item.Index)Modalid" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title">フォロー解除</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <p>@Html.DisplayFor(modelItem => item.Value.FollowName) さんのフォローを解除してもよろしいですか？</p>
+                                </div>
+                                @using (Html.BeginForm("Delete", "Follows"))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    @Html.HiddenFor(model => model.ElementAt(item.Index).FollowId, new { Name = "EmployeeId" })
+                                    <div class="modal-footer">
+                                        <div class="form-group">
+                                            <input type="submit" value="フォロー解除" class="btn btn-danger" />
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </table>
+}
+else
+{
+    <p>現在フォローしている従業員はいません。</p>
+}

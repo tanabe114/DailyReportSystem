@@ -1,32 +1,34 @@
-﻿using System;
+﻿using DailyReportSystem.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using DailyReportSystem.Models;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.AspNet.Identity.EntityFramework;
-
 
 namespace DailyReportSystem.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Chief,Manager,GeneralManager,ManagingDirector,President")]
     public class EmployeesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
         // このアプリケーション用のユーザーのサインインを管理するSignInManager
         private ApplicationSignInManager _signInManager;
+
         // このアプリケーション用のユーザー情報の管理をするUserManager
         private ApplicationUserManager _userManager;
+
         public EmployeesController()
         {
-
         }
+
         public EmployeesController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             UserManager = userManager;
@@ -60,8 +62,16 @@ namespace DailyReportSystem.Controllers
         // GET: Employees
         public ActionResult Index()
         {
+            //ログインユーザーID取得
+            string UserId = User.Identity.GetUserId();
+            //フォロー先ユーザーList作成
+            List<string> myFollows = db.Follows
+                .Where(r => r.EmployeeId == UserId)
+                .Select(r => r.FollowId)
+                .ToList();
+
             // ビューに送るためのEmployeesIndexViewModelのリストを作成
-            List<EmployeesIndexViewModel> employees = new List<EmployeesIndexViewModel>();
+            List<EmployeesIndexViewModel> indexViewModel = new List<EmployeesIndexViewModel>();
             // ユーザー一覧を、作成日時が最近のものから順にしてリストとして取得
             List<ApplicationUser> users = db.Users.OrderByDescending(u => u.CreatedAt).ToList();
             // ユーザーのリストを、EmployeesIndexViewModelのリストに変換
@@ -74,13 +84,27 @@ namespace DailyReportSystem.Controllers
                     EmployeeName = applicationUser.EmployeeName,
                     DeleteFlg = applicationUser.DeleteFlg,
                     Id = applicationUser.Id
-
                 };
+
+                //フォローボタン制御
+                if (applicationUser.Id == UserId) //ログインユーザー自身
+                {
+                    employee.FollowStatusFlag = FollowStatusEnum.LoginUser;
+                }
+                else if (myFollows.Contains(employee.Id)) //フォロー済み
+                {
+                    employee.FollowStatusFlag = FollowStatusEnum.Following;
+                }
+                else //未フォロー
+                {
+                    employee.FollowStatusFlag = FollowStatusEnum.Unfollowed;
+                }
+
                 // 作成したEmployeesIndexViewModelをリストに追加
-                employees.Add(employee);
+                indexViewModel.Add(employee);
             }
             // 作成したリストをIndexビューに送る
-            return View(employees);
+            return View(indexViewModel);
         }
 
         // GET: Employees/Details/5
@@ -134,8 +158,8 @@ namespace DailyReportSystem.Controllers
                 ApplicationUser applicationUser =
                     new ApplicationUser
                     {
-                // IdentityアカウントのUserNameにはメールアドレスを入れる必要がある
-                UserName = model.Email,
+                        // IdentityアカウントのUserNameにはメールアドレスを入れる必要がある
+                        UserName = model.Email,
                         Email = model.Email,
                         EmployeeName = model.EmployeeName,
                         UpdatedAt = DateTime.Now,
@@ -153,20 +177,58 @@ namespace DailyReportSystem.Controllers
                         new RoleStore<ApplicationRole>(new ApplicationDbContext())
                         );
 
-
-                    // AdminロールがDBに存在しなければ
-                    if (!await roleManager.RoleExistsAsync("Admin"))
+                    //            [Display(Name = "係長")]
+                    //Chief = 2,
+                    //[Display(Name = "部長")]
+                    //Manager = 3,
+                    //[Display(Name = "本部長")]
+                    //GeneralManager = 4,
+                    //[Display(Name = "専務")]
+                    //ManagingDirector = 5,
+                    //[Display(Name = "社長")]
+                    //President = 6
+                    if (!await roleManager.RoleExistsAsync("Chief"))
                     {
-                        // AdminロールをDBに作成
-                        await roleManager.CreateAsync(new ApplicationRole() { Name = "Admin" });
+                        await roleManager.CreateAsync(new ApplicationRole() { Name = "Chief" });
+                    }
+                    if (!await roleManager.RoleExistsAsync("Manager"))
+                    {
+                        await roleManager.CreateAsync(new ApplicationRole() { Name = "Manager" });
+                    }
+                    if (!await roleManager.RoleExistsAsync("GeneralManager"))
+                    {
+                        await roleManager.CreateAsync(new ApplicationRole() { Name = "GeneralManager" });
+                    }
+                    if (!await roleManager.RoleExistsAsync("ManagingDirector"))
+                    {
+                        await roleManager.CreateAsync(new ApplicationRole() { Name = "ManagingDirector" });
+                    }
+                    if (!await roleManager.RoleExistsAsync("President"))
+                    {
+                        await roleManager.CreateAsync(new ApplicationRole() { Name = "President" });
                     }
 
                     // mode.AdminFlagの内容によって、処理をswitchで変える。
                     switch (model.AdminFlag)
                     {
-                        case RolesEnum.Admin:
-                            // Adminロールをユーザーに対して設定
-                            await UserManager.AddToRoleAsync(applicationUser.Id, "Admin");
+                        case RolesEnum.Chief:
+                            await UserManager.AddToRoleAsync(applicationUser.Id, "Chief");
+                            break;
+
+                        case RolesEnum.Manager:
+                            await UserManager.AddToRoleAsync(applicationUser.Id, "Manager");
+                            break;
+
+                        case RolesEnum.GeneralManager:
+                            await UserManager.AddToRoleAsync(applicationUser.Id, "GeneralManager");
+                            break;
+
+                        case RolesEnum.ManagingDirector:
+                            await UserManager.AddToRoleAsync(applicationUser.Id, "ManagingDirector");
+                            break;
+
+                        case RolesEnum.President:
+                            await UserManager.AddToRoleAsync(applicationUser.Id, "President");
                             break;
                     }
 
@@ -212,10 +274,26 @@ namespace DailyReportSystem.Controllers
                 Email = applicationUser.Email,
                 EmployeeName = applicationUser.EmployeeName
             };
-            //従業員の権限(role)がAdminならAdminに、そうでなければNormalにする。
-            if (UserManager.IsInRole(applicationUser.Id, "Admin"))
+
+            if (UserManager.IsInRole(applicationUser.Id, "Chief"))
             {
-                employee.AdminFlag = RolesEnum.Admin;
+                employee.AdminFlag = RolesEnum.Chief;
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "Manager"))
+            {
+                employee.AdminFlag = RolesEnum.Manager;
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "GeneralManager"))
+            {
+                employee.AdminFlag = RolesEnum.GeneralManager;
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "ManagingDirector"))
+            {
+                employee.AdminFlag = RolesEnum.ManagingDirector;
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "President"))
+            {
+                employee.AdminFlag = RolesEnum.President;
             }
             else
             {
@@ -261,19 +339,56 @@ namespace DailyReportSystem.Controllers
                 // mode.AdminFlagの内容によって、処理をswitchで変える。
                 switch (employee.AdminFlag)
                 {
-                    case RolesEnum.Admin:
-                        //すでに管理者権限を持っているならbreakしてswitchを抜ける。
-                        if (UserManager.IsInRole(applicationUser.Id, "Admin"))
+                    case RolesEnum.Chief:
+                        if (UserManager.IsInRole(applicationUser.Id, "Chief"))
                             break;
-                        //Adminロールをユーザーに対して設定
-                        UserManager.AddToRole(applicationUser.Id, "Admin");
+                        UserManager.AddToRole(applicationUser.Id, "Chief");
+                        break;
+
+                    case RolesEnum.Manager:
+                        if (UserManager.IsInRole(applicationUser.Id, "Manager"))
+                            break;
+                        UserManager.AddToRole(applicationUser.Id, "Manager");
+                        break;
+
+                    case RolesEnum.GeneralManager: 
+                        if (UserManager.IsInRole(applicationUser.Id, "GeneralManager"))
+                            break;
+                        UserManager.AddToRole(applicationUser.Id, "GeneralManager");
+                        break;
+
+                    case RolesEnum.ManagingDirector:
+                        if (UserManager.IsInRole(applicationUser.Id, "ManagingDirector"))
+                            break;
+                        UserManager.AddToRole(applicationUser.Id, "ManagingDirector");
+                        break;
+
+                    case RolesEnum.President:
+                        if (UserManager.IsInRole(applicationUser.Id, "President"))
+                            break;
+                        UserManager.AddToRole(applicationUser.Id, "President");
                         break;
 
                     default:
-                        //管理者以外が選ばれている時に、管理者権限を持っていた場合、管理者権限を消す。
-                        if (UserManager.IsInRole(applicationUser.Id, "Admin"))
+                        if (UserManager.IsInRole(applicationUser.Id, "Chief"))
                         {
-                            UserManager.RemoveFromRole(applicationUser.Id, "Admin");
+                            UserManager.RemoveFromRole(applicationUser.Id, "Chief");
+                        }
+                        if (UserManager.IsInRole(applicationUser.Id, "Manager"))
+                        {
+                            UserManager.RemoveFromRole(applicationUser.Id, "Manager");
+                        }
+                        if (UserManager.IsInRole(applicationUser.Id, "GeneralManager"))
+                        {
+                            UserManager.RemoveFromRole(applicationUser.Id, "GeneralManager");
+                        }
+                        if (UserManager.IsInRole(applicationUser.Id, "ManagingDirector"))
+                        {
+                            UserManager.RemoveFromRole(applicationUser.Id, "ManagingDirector");
+                        }
+                        if (UserManager.IsInRole(applicationUser.Id, "President"))
+                        {
+                            UserManager.RemoveFromRole(applicationUser.Id, "President");
                         }
                         break;
                 }

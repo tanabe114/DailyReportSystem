@@ -18,30 +18,90 @@
             @Html.DisplayNameFor(model => model.EmployeeName)
         </th>
         <th></th>
+        <th></th>
     </tr>
 
-    @foreach (var item in Model)
+    @foreach (var item in Model.Select((Value, Index) => new { Value, Index }))
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Email)
+                @Html.DisplayFor(modelItem => item.Value.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EmployeeName)
+                @Html.DisplayFor(modelItem => item.Value.EmployeeName)
             </td>
-             <td>
-                @if (item.DeleteFlg == 1)
+            <td>
+                @if (item.Value.DeleteFlg == 1)
                 {
                     @:削除済み
                 }
                 else
                 {
-                    @Html.ActionLink("編集する", "Edit", new { id = item.Id }) @:|
-                    @Html.ActionLink("詳細を表示", "Details", new { id = item.Id }) @:|
-                    @Html.ActionLink("削除", "Delete", new { id = item.Id })
+                    @Html.ActionLink("編集する", "Edit", new { id = item.Value.Id }) @:|
+                    @Html.ActionLink("詳細を表示", "Details", new { id = item.Value.Id }) @:|
+                    @Html.ActionLink("削除", "Delete", new { id = item.Value.Id })
+                }
+            </td>
+            <td>
+                @if (item.Value.FollowStatusFlag == DailyReportSystem.Models.FollowStatusEnum.Following)
+                {
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#@Html.DisplayFor(modelItem => item.Index)Modalid">フォロー解除</button>
+
+                <div class="modal fade" id="@Html.DisplayFor(modelItem => item.Index)Modalid" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">フォロー解除</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>@Html.DisplayFor(modelItem => item.Value.EmployeeName) さんのフォローを解除してもよろしいですか？</p>
+                            </div>
+                            @using (Html.BeginForm("Delete", "Follows"))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(model => model.ElementAt(item.Index).Id, new { Name = "EmployeeId" })
+                                <div class="modal-footer">
+                                    <div class="form-group">
+                                        <input type="submit" value="フォロー解除" class="btn btn-danger" />
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                }
+                else if(item.Value.FollowStatusFlag == DailyReportSystem.Models.FollowStatusEnum.Unfollowed)
+                {
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#@Html.DisplayFor(modelItem => item.Index)Modalid">フォローする</button>
+
+                <div class="modal fade" id="@Html.DisplayFor(modelItem => item.Index)Modalid" role="dialog">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                <h4 class="modal-title">フォロー確認</h4>
+                            </div>
+                            <div class="modal-body">
+                                <p>@Html.DisplayFor(modelItem => item.Value.EmployeeName) さんをフォローしますか？</p>
+                            </div>
+                            @using (Html.BeginForm("Create", "Follows"))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.HiddenFor(model => model.ElementAt(item.Index).Id, new { Name = "EmployeeId" })
+                                <div class="modal-footer">
+                                    <div class="form-group">
+                                        <input type="submit" value="フォローする" class="btn btn-info" />
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">キャンセル</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
                 }
             </td>
         </tr>
     }
-
 </table>

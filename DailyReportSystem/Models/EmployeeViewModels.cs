@@ -12,10 +12,18 @@ namespace DailyReportSystem.Models
 {
     public enum RolesEnum
     {
-        [Display(Name = "一般")]
+        [Display(Name = "一般")] 
         Normal = 1,
-        [Display(Name = "管理者")]
-        Admin = 2
+        [Display(Name = "係長")]
+        Chief = 2,
+        [Display(Name = "部長")]
+        Manager = 3,
+        [Display(Name = "本部長")]
+        GeneralManager = 4,
+        [Display(Name = "専務")]
+        ManagingDirector = 5,
+        [Display(Name = "社長")]
+        President = 6
     }
 
     public class EmployeesIndexViewModel
@@ -29,6 +37,8 @@ namespace DailyReportSystem.Models
         public string EmployeeName { get; set; }
 
         public int DeleteFlg { get; set; }
+
+        public FollowStatusEnum? FollowStatusFlag { get; set; }
     }
 
     public class EmployeesCreateViewModel

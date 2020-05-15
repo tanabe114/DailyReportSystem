@@ -19,6 +19,14 @@ namespace DailyReportSystem.Controllers
         // GET: Reports
         public ActionResult Index()
         {
+            //ログインユーザーID取得
+            string UserId = User.Identity.GetUserId();
+            //フォロー先ユーザーList作成
+            List<string> myFollows = db.Follows
+                .Where(r => r.EmployeeId == UserId)
+                .Select(r => r.FollowId)
+                .ToList();
+
             // 日報のリストから、表示用のビューモデルのリストを作成
             List<ReportsIndexViewModel> indexViewModels = new List<ReportsIndexViewModel>();
             var reports = db.Reports.OrderByDescending(r => r.ReportDate).ToList();
@@ -27,13 +35,28 @@ namespace DailyReportSystem.Controllers
                 ReportsIndexViewModel indexViewModel = new ReportsIndexViewModel
                 {
                     Id = report.Id,
-                    // 従業員のリストからこの日報のEmployeeIdで検索をかけて取得した従業員の名前を設定
                     EmployeeName = db.Users.Find(report.EmployeeId).EmployeeName,
+                    EmployeeId = report.EmployeeId,
                     ReportDate = report.ReportDate,
                     Title = report.Title,
                     Content = report.Content,
                     NegotiationStatus = report.NegotiationStatus
                 };
+
+                //フォローボタン制御
+                if(report.EmployeeId == UserId) //ログインユーザー自身
+                {
+                    indexViewModel.FollowStatusFlag = FollowStatusEnum.LoginUser;
+                }
+                else if(myFollows.Contains(report.EmployeeId)) //フォロー済み
+                {
+                    indexViewModel.FollowStatusFlag = FollowStatusEnum.Following;
+                }
+                else //未フォロー
+                {
+                    indexViewModel.FollowStatusFlag = FollowStatusEnum.Unfollowed;
+                }
+
                 indexViewModels.Add(indexViewModel);
             }
 

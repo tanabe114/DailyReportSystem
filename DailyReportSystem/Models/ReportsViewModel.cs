@@ -15,6 +15,8 @@ namespace DailyReportSystem.Models
         [DisplayName("氏名")]
         public string EmployeeName { get; set; }
 
+        public string EmployeeId { get; set; }
+
         [DisplayName("日付")]
         [DataType(DataType.Date)]
         public DateTime? ReportDate { get; set; }
@@ -27,6 +29,8 @@ namespace DailyReportSystem.Models
 
         [DisplayName("商談状況")]
         public string NegotiationStatus { get; set; }
+
+        public FollowStatusEnum? FollowStatusFlag { get; set; }
     }
 
     public class ReportsCreateViewModel
