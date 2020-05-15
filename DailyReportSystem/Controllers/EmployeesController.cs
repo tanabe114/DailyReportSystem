@@ -132,7 +132,30 @@ namespace DailyReportSystem.Controllers
                 UpdatedAt = applicationUser.UpdatedAt
             };
 
-            employee.Role = UserManager.IsInRole(applicationUser.Id, "Admin") ? "管理者" : "一般";
+            if (UserManager.IsInRole(applicationUser.Id, "Chief"))
+            {
+                employee.Role = "係長";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "Manager"))
+            {
+                employee.Role = "部長";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "GeneralManager"))
+            {
+                employee.Role = "本部長";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "ManagingDirector"))
+            {
+                employee.Role = "専務";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "President"))
+            {
+                employee.Role = "社長";
+            }
+            else
+            {
+                employee.Role = "一般";
+            }
 
             return View(employee);
         }
@@ -177,16 +200,6 @@ namespace DailyReportSystem.Controllers
                         new RoleStore<ApplicationRole>(new ApplicationDbContext())
                         );
 
-                    //            [Display(Name = "係長")]
-                    //Chief = 2,
-                    //[Display(Name = "部長")]
-                    //Manager = 3,
-                    //[Display(Name = "本部長")]
-                    //GeneralManager = 4,
-                    //[Display(Name = "専務")]
-                    //ManagingDirector = 5,
-                    //[Display(Name = "社長")]
-                    //President = 6
                     if (!await roleManager.RoleExistsAsync("Chief"))
                     {
                         await roleManager.CreateAsync(new ApplicationRole() { Name = "Chief" });
@@ -351,7 +364,7 @@ namespace DailyReportSystem.Controllers
                         UserManager.AddToRole(applicationUser.Id, "Manager");
                         break;
 
-                    case RolesEnum.GeneralManager: 
+                    case RolesEnum.GeneralManager:
                         if (UserManager.IsInRole(applicationUser.Id, "GeneralManager"))
                             break;
                         UserManager.AddToRole(applicationUser.Id, "GeneralManager");
@@ -427,7 +440,30 @@ namespace DailyReportSystem.Controllers
                 UpdatedAt = applicationUser.UpdatedAt
             };
 
-            employee.Role = UserManager.IsInRole(applicationUser.Id, "Admin") ? "管理者" : "一般";
+            if (UserManager.IsInRole(applicationUser.Id, "Chief"))
+            {
+                employee.Role = "係長";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "Manager"))
+            {
+                employee.Role = "部長";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "GeneralManager"))
+            {
+                employee.Role = "本部長";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "ManagingDirector"))
+            {
+                employee.Role = "専務";
+            }
+            else if (UserManager.IsInRole(applicationUser.Id, "President"))
+            {
+                employee.Role = "社長";
+            }
+            else
+            {
+                employee.Role = "一般";
+            }
 
             return View(employee);
         }
