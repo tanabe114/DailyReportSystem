@@ -30,6 +30,9 @@ namespace DailyReportSystem.Models
         [DisplayName("商談状況")]
         public string NegotiationStatus { get; set; }
 
+        [DisplayName("リアクション数")]
+        public int ReactionQuantity { get; set; }
+
         [DisplayName("承認状況")]
         public string ApprovalStatus { get; internal set; }
 
@@ -111,6 +114,11 @@ namespace DailyReportSystem.Models
         public string ApprovalStatus { get; set; }
 
         public bool Approvable { get; set; }
+
+        [DisplayName("リアクション数")]
+        public int ReactionQuantity { get; set; }
+
+        public int ReactionFlag { get; set; }
 
         public bool IsReportCreater { get; set; }
     }

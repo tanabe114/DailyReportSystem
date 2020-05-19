@@ -18,7 +18,43 @@ namespace DailyReportSystem.Controllers
         // GET: Reactions
         public ActionResult Index()
         {
-            return View(db.Reactions.ToList());
+            //ログインユーザーID取得
+            string UserId = User.Identity.GetUserId();
+            //リアクション先日報IDList作成
+            List<int> myReportIds = db.Reactions
+                .Where(r => r.EmployeeId == UserId)
+                .Select(r => r.ReportId)
+                .ToList();
+
+            // 日報のリストから、表示用のビューモデルのリストを作成
+            List<ReportsIndexViewModel> indexViewModels = new List<ReportsIndexViewModel>();
+            foreach (int reportId in myReportIds)
+            {
+                Report report = db.Reports.Find(reportId);
+                ReportsIndexViewModel indexViewModel = new ReportsIndexViewModel
+                {
+                    Id = report.Id,
+                    EmployeeName = db.Users.Find(report.EmployeeId).EmployeeName,
+                    EmployeeId = report.EmployeeId,
+                    ReportDate = report.ReportDate,
+                    Title = report.Title,
+                    Content = report.Content,
+                    NegotiationStatus = report.NegotiationStatus,
+                };
+
+                indexViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
+
+                List<string> reactions = db.Reactions
+                    .Where(r => r.ReportId == reportId)
+                    .Select(r => r.EmployeeId)
+                    .ToList();
+
+                indexViewModel.ReactionQuantity = reactions.Count();
+
+                indexViewModels.Add(indexViewModel);
+            }
+
+            return View(indexViewModels);
         }
 
 

@@ -73,6 +73,13 @@ namespace DailyReportSystem.Controllers
 
                 indexViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
 
+                List<string> reactions = db.Reactions
+                    .Where(r => r.ReportId == report.Id)
+                    .Select(r => r.EmployeeId)
+                    .ToList();
+
+                indexViewModel.ReactionQuantity = reactions.Count();
+
                 //フォローボタン制御
                 if (report.EmployeeId == UserId) //ログインユーザー自身
                 {
@@ -138,7 +145,7 @@ namespace DailyReportSystem.Controllers
             }
 
             //リアクション
-            //フォロー先ユーザーList作成
+            //リアクション元ユーザーList作成
             List<string> reactions = db.Reactions
                 .Where(r => r.ReportId == report.Id)
                 .Select(r => r.EmployeeId)
@@ -175,7 +182,7 @@ namespace DailyReportSystem.Controllers
             }
 
             TempData["flush"] = report.ApprovalStatus == 1 ? $"{EmployeeName}さんの日報を承認しました。" : $"{EmployeeName}さんの日報の承認を解除しました。";
-            
+
             db.Entry(report).State = EntityState.Modified;
             db.SaveChanges();
 

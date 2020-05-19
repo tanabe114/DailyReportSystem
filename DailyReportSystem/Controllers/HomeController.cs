@@ -47,6 +47,11 @@ namespace DailyReportSystem.Controllers
                     NegotiationStatus = report.NegotiationStatus
                 };
                 indexViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
+                List<string> reactions = db.Reactions
+                    .Where(r => r.ReportId == report.Id)
+                    .Select(r => r.EmployeeId)
+                    .ToList();
+                indexViewModel.ReactionQuantity = reactions.Count();
                 indexViewModels.Add(indexViewModel);
             }
             return View(indexViewModels);

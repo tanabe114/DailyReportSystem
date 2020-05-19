@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DailyReportSystem.Models.Reaction>
+﻿@model IEnumerable<DailyReportSystem.Models.ReportsIndexViewModel>
 
 @{
     ViewBag.Title = "リアクションした日報一覧";
@@ -6,30 +6,47 @@
 
 <h2>リアクションした日報一覧</h2>
 
-<table class="table">
+<table class="table table-hover table-striped">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.EmployeeId)
+            @Html.DisplayNameFor(model => model.EmployeeName)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.ReportId)
+            @Html.DisplayNameFor(model => model.ReportDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ApprovalStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ReactionQuantity)
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.EmployeeId)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.ReportId)
-        </td>
-
-        <td>
-            @Html.ActionLink("詳細", "Details", "Reports", new { id = item.Id })
-        </td>
-    </tr>
-}
-
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReportDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovalStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ReactionQuantity)
+            </td>
+            <td>
+                @Html.ActionLink("詳細を表示", "Details", "Reports", new { id = item.Id }, null)
+            </td>
+        </tr>
+    }
 </table>
