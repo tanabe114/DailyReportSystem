@@ -1,4 +1,8 @@
-﻿using System;
+﻿using DailyReportSystem.Models;
+using DailyReportSystem.Utils;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -6,8 +10,8 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using DailyReportSystem.Models;
-using Microsoft.AspNet.Identity;
+
+//using Utils.RolesEnumUtil;
 
 namespace DailyReportSystem.Controllers
 {
@@ -15,6 +19,30 @@ namespace DailyReportSystem.Controllers
     public class ReportsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
+
+        // このアプリケーション用のユーザー情報の管理をするUserManager
+        private ApplicationUserManager _userManager;
+
+        public ReportsController()
+        {
+        }
+
+        public ReportsController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        {
+            UserManager = userManager;
+        }
+
+        public ApplicationUserManager UserManager
+        {
+            get
+            {
+                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            }
+            private set
+            {
+                _userManager = value;
+            }
+        }
 
         // GET: Reports
         public ActionResult Index()
@@ -40,15 +68,17 @@ namespace DailyReportSystem.Controllers
                     ReportDate = report.ReportDate,
                     Title = report.Title,
                     Content = report.Content,
-                    NegotiationStatus = report.NegotiationStatus
+                    NegotiationStatus = report.NegotiationStatus,
                 };
 
+                indexViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
+
                 //フォローボタン制御
-                if(report.EmployeeId == UserId) //ログインユーザー自身
+                if (report.EmployeeId == UserId) //ログインユーザー自身
                 {
                     indexViewModel.FollowStatusFlag = FollowStatusEnum.LoginUser;
                 }
-                else if(myFollows.Contains(report.EmployeeId)) //フォロー済み
+                else if (myFollows.Contains(report.EmployeeId)) //フォロー済み
                 {
                     indexViewModel.FollowStatusFlag = FollowStatusEnum.Following;
                 }
@@ -87,10 +117,58 @@ namespace DailyReportSystem.Controllers
                 CreatedAt = report.CreatedAt,
                 UpdatedAt = report.UpdatedAt,
             };
-            detailsViewModel.EmployeeName = db.Users.Find(report.EmployeeId).EmployeeName;
-            detailsViewModel.isReportCreater = User.Identity.GetUserId() == report.EmployeeId;
+
+            ApplicationUser reportUser = db.Users.Find(report.EmployeeId);
+            string loginUserId = User.Identity.GetUserId();
+
+            detailsViewModel.EmployeeName = reportUser.EmployeeName;
+            detailsViewModel.IsReportCreater = loginUserId == report.EmployeeId;
+            detailsViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
+
+            string reportUserRole = UserManager.GetRoles(reportUser.Id).Count() != 0 ? UserManager.GetRoles(reportUser.Id)[0] : "Normal";
+            string loginUserRole = UserManager.GetRoles(loginUserId).Count() != 0 ? UserManager.GetRoles(loginUserId)[0] : "Normal";
+
+            if (RolesEnumUtil.GetRoleNum(reportUserRole) < RolesEnumUtil.GetRoleNum(loginUserRole))
+            {
+                detailsViewModel.Approvable = true;
+            }
+            else
+            {
+                detailsViewModel.Approvable = false;
+            }
 
             return View(detailsViewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Details([Bind(Include = "ReportId, EmployeeName")] int? ReportId, string EmployeeName)
+        {
+            if (ReportId == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Report report = db.Reports.Find(ReportId);
+            if (report == null)
+            {
+                return HttpNotFound();
+            }
+            if (report.ApprovalStatus == 1)
+            {
+                report.ApprovalStatus = 0;
+            }
+            else
+            {
+                report.ApprovalStatus = 1;
+            }
+
+            TempData["flush"] = report.ApprovalStatus == 1 ? $"{EmployeeName}さんの日報を承認しました。" : $"{EmployeeName}さんの日報の承認を解除しました。";
+            
+            db.Entry(report).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
         // GET: Reports/Create
@@ -118,7 +196,8 @@ namespace DailyReportSystem.Controllers
                     AttendanceTime = createViewModel.AttendanceTime,
                     LeavingTime = createViewModel.LeavingTime,
                     UpdatedAt = DateTime.Now,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    ApprovalStatus = 0
                 };
 
                 //Contextに新しいオブジェクト追加
@@ -162,6 +241,7 @@ namespace DailyReportSystem.Controllers
                 AttendanceTime = report.AttendanceTime,
                 LeavingTime = report.LeavingTime
             };
+
             return View(editViewModel);
         }
 

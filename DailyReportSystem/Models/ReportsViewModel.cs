@@ -30,6 +30,9 @@ namespace DailyReportSystem.Models
         [DisplayName("商談状況")]
         public string NegotiationStatus { get; set; }
 
+        [DisplayName("承認状況")]
+        public string ApprovalStatus { get; internal set; }
+
         public FollowStatusEnum? FollowStatusFlag { get; set; }
     }
 
@@ -104,7 +107,12 @@ namespace DailyReportSystem.Models
         [DataType(DataType.DateTime)]
         public DateTime? UpdatedAt { get; set; }
 
-        public bool isReportCreater { get; set; }
+        [DisplayName("承認状況")]
+        public string ApprovalStatus { get; set; }
+
+        public bool Approvable { get; set; }
+
+        public bool IsReportCreater { get; set; }
     }
 
     public class ReportsEditViewModel

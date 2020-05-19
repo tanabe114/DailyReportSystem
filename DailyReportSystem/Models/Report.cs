@@ -48,5 +48,8 @@ namespace DailyReportSystem.Models
         [DisplayName("更新日付")]
         [DataType(DataType.DateTime)]
         public DateTime? UpdatedAt { get; set; }
+
+        [DisplayName("承認状況")]
+        public int? ApprovalStatus { get; set; }
     }
 }

@@ -171,6 +171,7 @@
     <Compile Include="Controllers\EmployeesController.cs" />
     <Compile Include="Controllers\FollowsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReactionsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -219,16 +220,26 @@
     <Compile Include="Migrations\202005130140324_AddFollowsToDbContext1.Designer.cs">
       <DependentUpon>202005130140324_AddFollowsToDbContext1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005180120296_AddReport.cs" />
+    <Compile Include="Migrations\202005180120296_AddReport.Designer.cs">
+      <DependentUpon>202005180120296_AddReport.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202005190102369_AddReactionsToDbContext.cs" />
+    <Compile Include="Migrations\202005190102369_AddReactionsToDbContext.Designer.cs">
+      <DependentUpon>202005190102369_AddReactionsToDbContext.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EmployeeViewModels.cs" />
     <Compile Include="Models\Follows.cs" />
     <Compile Include="Models\FollowsViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Reaction.cs" />
     <Compile Include="Models\Report.cs" />
     <Compile Include="Models\ReportsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\RolesEnum.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -278,6 +289,11 @@
     <Content Include="Views\Reports\Edit.cshtml" />
     <Content Include="Views\Reports\Index.cshtml" />
     <Content Include="Views\Follows\Index.cshtml" />
+    <Content Include="Views\Reactions\Create.cshtml" />
+    <Content Include="Views\Reactions\Delete.cshtml" />
+    <Content Include="Views\Reactions\Details.cshtml" />
+    <Content Include="Views\Reactions\Edit.cshtml" />
+    <Content Include="Views\Reactions\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -328,6 +344,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005130140324_AddFollowsToDbContext1.resx">
       <DependentUpon>202005130140324_AddFollowsToDbContext1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005180120296_AddReport.resx">
+      <DependentUpon>202005180120296_AddReport.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005190102369_AddReactionsToDbContext.resx">
+      <DependentUpon>202005190102369_AddReactionsToDbContext.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

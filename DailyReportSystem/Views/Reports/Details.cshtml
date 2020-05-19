@@ -81,9 +81,37 @@
             @Html.DisplayFor(model => model.UpdatedAt)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.ApprovalStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ApprovalStatus)
+        </dd>
+
+        @if (!Model.IsReportCreater && Model.Approvable)
+        {
+            using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+                @Html.HiddenFor(model => model.EmployeeName)
+                <dd>
+
+                    @if (Model.ApprovalStatus == "承認済み")
+                    {
+                        <input type="submit" value="解除" class="btn btn-danger" />
+                    }
+                    else
+                    {
+                        <input type="submit" value="承認" class="btn btn-info" />
+                    }
+                </dd>
+            }
+        }
     </dl>
 </div>
-@if (Model.isReportCreater)
+@if (Model.IsReportCreater)
 {
     <p>
         @Html.ActionLink("この日報を編集する", "Edit", new { id = Model.Id })

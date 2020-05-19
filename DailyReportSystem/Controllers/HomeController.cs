@@ -46,6 +46,7 @@ namespace DailyReportSystem.Controllers
                     Content = report.Content,
                     NegotiationStatus = report.NegotiationStatus
                 };
+                indexViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
                 indexViewModels.Add(indexViewModel);
             }
             return View(indexViewModels);

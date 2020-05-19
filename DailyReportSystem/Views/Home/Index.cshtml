@@ -6,7 +6,6 @@
 
 <h2>日報管理システムへようこそ</h2>
 
-
 <h4>タイムライン</h4>
 
 <table class="table table-hover table-striped">
@@ -19,6 +18,9 @@
         </th>
         <th>
             @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ApprovalStatus)
         </th>
         <th></th>
     </tr>
@@ -34,6 +36,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovalStatus)
             </td>
             <td>
                 @Html.ActionLink("詳細を表示", "Details", "Reports", new { id = item.Id }, null)
