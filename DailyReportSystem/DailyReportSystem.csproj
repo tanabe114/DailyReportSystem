@@ -239,8 +239,8 @@
     <Compile Include="Models\FollowsViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Reaction.cs" />
-    <Compile Include="Models\ReactionViewModel.cs" />
     <Compile Include="Models\Report.cs" />
+    <Compile Include="Models\ReportViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\RolesEnum.cs" />
