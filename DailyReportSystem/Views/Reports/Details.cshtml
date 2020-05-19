@@ -109,6 +109,27 @@
                 </dd>
             }
         }
+
+        <dd>
+            @if (Model.ReactionFlag == 0)
+            {
+                using (Html.BeginForm("Create", "Reactions"))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+                    <input type="submit" value="&#9825;" />@Html.DisplayFor(model => model.ReactionQuantity)
+                }
+            }
+            else
+            {
+                using (Html.BeginForm("Delete", "Reactions"))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+                    <input type="submit" value="&#128147;" />@Html.DisplayFor(model => model.ReactionQuantity)
+                }
+            }
+        </dd>
     </dl>
 </div>
 @if (Model.IsReportCreater)

@@ -48,7 +48,7 @@ namespace DailyReportSystem.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "EmployeeId")] string EmployeeId)
         {
-            //GET受信できてるか
+            //受信できてるか
             if (EmployeeId == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);

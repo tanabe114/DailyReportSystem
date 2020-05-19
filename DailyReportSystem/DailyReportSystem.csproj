@@ -228,6 +228,10 @@
     <Compile Include="Migrations\202005190102369_AddReactionsToDbContext.Designer.cs">
       <DependentUpon>202005190102369_AddReactionsToDbContext.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202005190305201_AddReactions.cs" />
+    <Compile Include="Migrations\202005190305201_AddReactions.Designer.cs">
+      <DependentUpon>202005190305201_AddReactions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EmployeeViewModels.cs" />
@@ -235,8 +239,8 @@
     <Compile Include="Models\FollowsViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\Reaction.cs" />
+    <Compile Include="Models\ReactionViewModel.cs" />
     <Compile Include="Models\Report.cs" />
-    <Compile Include="Models\ReportsViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\RolesEnum.cs" />
@@ -289,10 +293,6 @@
     <Content Include="Views\Reports\Edit.cshtml" />
     <Content Include="Views\Reports\Index.cshtml" />
     <Content Include="Views\Follows\Index.cshtml" />
-    <Content Include="Views\Reactions\Create.cshtml" />
-    <Content Include="Views\Reactions\Delete.cshtml" />
-    <Content Include="Views\Reactions\Details.cshtml" />
-    <Content Include="Views\Reactions\Edit.cshtml" />
     <Content Include="Views\Reactions\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -350,6 +350,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202005190102369_AddReactionsToDbContext.resx">
       <DependentUpon>202005190102369_AddReactionsToDbContext.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202005190305201_AddReactions.resx">
+      <DependentUpon>202005190305201_AddReactions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

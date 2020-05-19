@@ -6,14 +6,7 @@ using System.Web;
 
 namespace DailyReportSystem.Models
 {
-    public enum FollowStatusEnum
-    {
-        Unfollowed = 0,
-        Following = 1,
-        LoginUser = 2
-    }
-
-    public class FollowsIndexViewModel
+    public class ReactionIndexViewModel
     {
         [DisplayName("ID")]
         public int Id { get; set; }

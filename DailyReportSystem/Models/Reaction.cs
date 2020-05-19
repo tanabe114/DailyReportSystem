@@ -14,7 +14,7 @@ namespace DailyReportSystem.Models
 
         public string EmployeeId { get; set; }
 
-        public string ReportId { get; set; }
+        public int ReportId { get; set; }
 
         [DisplayName("リアクションの種類")]
         public int Category { get; set; }

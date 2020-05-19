@@ -115,7 +115,7 @@ namespace DailyReportSystem.Controllers
                 AttendanceTime = report.AttendanceTime,
                 LeavingTime = report.LeavingTime,
                 CreatedAt = report.CreatedAt,
-                UpdatedAt = report.UpdatedAt,
+                UpdatedAt = report.UpdatedAt
             };
 
             ApplicationUser reportUser = db.Users.Find(report.EmployeeId);
@@ -136,6 +136,17 @@ namespace DailyReportSystem.Controllers
             {
                 detailsViewModel.Approvable = false;
             }
+
+            //リアクション
+            //フォロー先ユーザーList作成
+            List<string> reactions = db.Reactions
+                .Where(r => r.ReportId == report.Id)
+                .Select(r => r.EmployeeId)
+                .ToList();
+
+            detailsViewModel.ReactionQuantity = reactions.Count();
+
+            detailsViewModel.ReactionFlag = reactions.Contains(loginUserId) ? 1 : 0;
 
             return View(detailsViewModel);
         }
