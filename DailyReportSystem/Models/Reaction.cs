@@ -7,6 +7,14 @@ using System.Web;
 
 namespace DailyReportSystem.Models
 {
+    public enum ReactionCategoryEnum
+    {
+        Like = 0,
+        Love = 1,
+        Haha = 2,
+        Wow = 3
+    }
+
     public class Reaction
     {
         [Key]
@@ -17,7 +25,7 @@ namespace DailyReportSystem.Models
         public int ReportId { get; set; }
 
         [DisplayName("リアクションの種類")]
-        public int Category { get; set; }
+        public string Category { get; set; }
 
         [DisplayName("リアクションした日付")]
         [DataType(DataType.DateTime)]

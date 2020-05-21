@@ -15,6 +15,7 @@
         <th>
             @Html.DisplayNameFor(model => model.EmployeeName)
         </th>
+        <th></th>
         <th>
             @Html.DisplayNameFor(model => model.ReportDate)
         </th>
@@ -28,7 +29,6 @@
             @Html.DisplayNameFor(model => model.ReactionQuantity)
         </th>
         <th></th>
-        <th></th>
     </tr>
 
     @foreach (var item in Model.Select((Value, Index) => new { Value, Index }))
@@ -36,21 +36,6 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Value.EmployeeName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value.ReportDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value.ApprovalStatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Value.ReactionQuantity)
-            </td>
-            <td>
-                @Html.ActionLink("詳細を表示", "Details", new { id = item.Value.Id }, new { @class = "btn btn-default" })
             </td>
             @if (item.Value.FollowStatusFlag == DailyReportSystem.Models.FollowStatusEnum.LoginUser)
             {
@@ -119,6 +104,21 @@
                     </div>
                 </td>
             }
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.ReportDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.ApprovalStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Value.ReactionQuantity)
+            </td>
+            <td>
+                @Html.ActionLink("詳細を表示", "Details", new { id = item.Value.Id }, new { @class = "btn btn-default" })
+            </td>
         </tr>
     }
 </table>

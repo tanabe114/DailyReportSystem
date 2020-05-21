@@ -57,79 +57,87 @@ namespace DailyReportSystem.Controllers
             return View(indexViewModels);
         }
 
-
         // POST: Reactions/Create
         // 過多ポスティング攻撃を防止するには、バインド先とする特定のプロパティを有効にしてください。
         // 詳細については、https://go.microsoft.com/fwlink/?LinkId=317598 を参照してください。
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ReportId")] int? reportId)
+        public ActionResult Create([Bind(Include = "ReportId,Category")] Reaction reaction)
         {
             //受信できてるか
-            if (reportId == null)
+            if (ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                string UserId = User.Identity.GetUserId();
+
+                //旧リアクションあるか判定
+                //リアクション先一覧取得
+                List<Reaction> reactions = db.Reactions
+                    .Where(r => r.EmployeeId == UserId)
+                    .ToList();
+                if(reactions != null)
+                {
+                    Reaction oldReaction = reactions.Find(r => r.ReportId == reaction.ReportId);
+                    if(oldReaction != null)
+                    {
+                        //旧リアクション削除
+                        DeleteReaction(oldReaction);
+                    }
+                }
+
+                reaction.EmployeeId = UserId;
+                reaction.CreatedAt = DateTime.Now;
+
+                //Contextに新しいオブジェクト追加
+                db.Reactions.Add(reaction);
+                //実際のDBに反映
+                db.SaveChanges();
+                //indexにRedirect（ページ遷移）
+                return RedirectToAction("Index");
             }
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
 
-            //日報IDが有効か
-            if (db.Reports.Find(reportId) == null)
-            {
-                return HttpNotFound();
-            }
-
-            //ログインユーザー取得
-            string UserId = User.Identity.GetUserId();
-
-            Reaction reaction = new Reaction()
-            {
-                EmployeeId = UserId,
-                ReportId = (int)reportId,
-                Category = 0,
-                CreatedAt = DateTime.Now
-            };
-
-            //Contextに新しいオブジェクト追加
-            db.Reactions.Add(reaction);
-            //実際のDBに反映
+        private void DeleteReaction(Reaction reaction)
+        {
+            // 行削除
+            db.Reactions.Remove(reaction);
             db.SaveChanges();
-            //indexにRedirect（ページ遷移）
-            return RedirectToAction("Index");
         }
 
         // POST: Reactions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int? reportId)
+        public ActionResult DeleteConfirmed([Bind(Include = "ReportId,Category")] Reaction reaction)
         {
-            if (reportId == null)
+            if(ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                //ログインしているユーザーID取得
+                string UserId = User.Identity.GetUserId();
+
+                //リアクション先一覧取得
+                List<Reaction> reactions = db.Reactions
+                    .Where(r => r.EmployeeId == UserId)
+                    .ToList();
+                if (reactions == null)
+                {
+                    return HttpNotFound();
+                }
+
+                //解除したい行取得
+                Reaction reactionRecord = reactions.Find(r => r.ReportId == reaction.ReportId && r.Category == reaction.Category);
+                if (reactionRecord == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // 行削除
+                db.Reactions.Remove(reactionRecord);
+                db.SaveChanges();
+
+                return RedirectToAction("Index");
             }
 
-            //ログインしているユーザーID取得
-            string UserId = User.Identity.GetUserId();
-
-            //リアクション先一覧取得
-            List<Reaction> reactions = db.Reactions
-                .Where(r => r.EmployeeId == UserId)
-                .ToList();
-            if (reactions == null)
-            {
-                return HttpNotFound();
-            }
-
-            //解除したいフォロー先従業員の行取得
-            Reaction reaction = reactions.Find(r => r.ReportId == reportId);
-            if (reaction == null)
-            {
-                return HttpNotFound();
-            }
-
-            // 行削除
-            db.Reactions.Remove(reaction);
-            db.SaveChanges();
-
-            return RedirectToAction("Index");
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         protected override void Dispose(bool disposing)

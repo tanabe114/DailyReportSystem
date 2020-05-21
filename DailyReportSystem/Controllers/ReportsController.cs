@@ -145,15 +145,43 @@ namespace DailyReportSystem.Controllers
             }
 
             //リアクション
-            //リアクション元ユーザーList作成
-            List<string> reactions = db.Reactions
+            //リアクション種類別GROUP分け
+            var reactionsCategory = db.Reactions
                 .Where(r => r.ReportId == report.Id)
-                .Select(r => r.EmployeeId)
-                .ToList();
+                .GroupBy(r => r.Category);
 
-            detailsViewModel.ReactionQuantity = reactions.Count();
+            var reactionQuantity = new Dictionary<string, int>();
+            var reactionFlag = new Dictionary<string, bool>();
+            var reactionString = new Dictionary<string, string>();
 
-            detailsViewModel.ReactionFlag = reactions.Contains(loginUserId) ? 1 : 0;
+            //Dictionary初期値設定(null防止)
+            foreach (ReactionCategoryEnum c in Enum.GetValues(typeof(ReactionCategoryEnum)))
+            {
+                reactionQuantity.Add(c.ToString(), 0);
+                reactionFlag.Add(c.ToString(), false);
+            }
+
+            reactionString.Add("Like", "いいね");
+            reactionString.Add("Love", "超いいね");
+            reactionString.Add("Haha", "笑い");
+            reactionString.Add("Wow", "びっくり");
+
+            //Dictionaryに値設定
+            foreach (var reactions in reactionsCategory)
+            {
+                reactionQuantity[reactions.Key] = reactions.Count();
+                foreach (var r in reactions)
+                {
+                    if (r.EmployeeId == loginUserId)
+                    {
+                        reactionFlag[reactions.Key] = true;
+                    }
+                } 
+            }
+
+            detailsViewModel.ReactionQuantity = reactionQuantity;
+            detailsViewModel.ReactionFlag = reactionFlag;
+            detailsViewModel.ReactionString = reactionString;
 
             return View(detailsViewModel);
         }

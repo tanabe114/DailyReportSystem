@@ -116,9 +116,11 @@ namespace DailyReportSystem.Models
         public bool Approvable { get; set; }
 
         [DisplayName("リアクション数")]
-        public int ReactionQuantity { get; set; }
+        public Dictionary<string, int> ReactionQuantity { get; set; }
 
-        public int ReactionFlag { get; set; }
+        public Dictionary<string, bool> ReactionFlag { get; set; }
+
+        public Dictionary<string, string> ReactionString { get; set; }
 
         public bool IsReportCreater { get; set; }
     }

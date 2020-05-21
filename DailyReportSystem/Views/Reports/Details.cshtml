@@ -110,24 +110,32 @@
             }
         }
 
+        <dd>　</dd>
+
         <dd>
-            @if (Model.ReactionFlag == 0)
+            @foreach (var item in Model.ReactionFlag)
             {
-                using (Html.BeginForm("Create", "Reactions"))
+                if (item.Value == true)
                 {
-                    @Html.AntiForgeryToken()
-                    @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
-                    <input type="submit" value="&#9825;" />@Html.DisplayFor(model => model.ReactionQuantity)
+                    using (Html.BeginForm("Delete", "Reactions"))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+                        @Html.HiddenFor(modelitem => item.Key, new { Name = "Category" })
+                        <input type="submit" value="@Html.DisplayFor(model => model.ReactionString[item.Key])" class="btn btn-warning" />@Html.DisplayFor(model => model.ReactionQuantity[item.Key])　
+                    }
                 }
-            }
-            else
-            {
-                using (Html.BeginForm("Delete", "Reactions"))
+                else
                 {
-                    @Html.AntiForgeryToken()
-                    @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
-                    <input type="submit" value="&#128147;" />@Html.DisplayFor(model => model.ReactionQuantity)
+                    using (Html.BeginForm("Create", "Reactions"))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+                        @Html.HiddenFor(modelitem => item.Key, new { Name = "Category" })
+                        <input type="submit" value="@Html.DisplayFor(model => model.ReactionString[item.Key])"  class="btn btn-default" />@Html.DisplayFor(model => model.ReactionQuantity[item.Key])
+                    }
                 }
+
             }
         </dd>
     </dl>
