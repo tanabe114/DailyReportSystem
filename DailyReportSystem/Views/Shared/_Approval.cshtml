@@ -1,0 +1,34 @@
+﻿@model DailyReportSystem.Models.ReportsDetailsViewModel
+<div id="approvalReplaceArea">
+    <dd>
+        @Html.DisplayFor(model => model.ApprovalStatus)
+    </dd>
+
+    @if (!Model.IsReportCreater && Model.Approvable)
+    {
+
+        using (Ajax.BeginForm(new AjaxOptions
+        {
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "POST",
+            UpdateTargetId = "approvalReplaceArea",
+            OnBegin = "disableApprovalButton",
+            OnComplete = "enableApprovalButton"
+        }))
+        {
+            <dd>
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+                @Html.HiddenFor(model => model.EmployeeName)
+                @if (Model.ApprovalStatus == "承認済み")
+                {
+                    <input type="submit" value="解除" class="btn btn-danger btn-approval" />
+                }
+                else
+                {
+                    <input type="submit" value="承認" class="btn btn-info btn-approval" />
+                }
+            </dd>
+        }
+    }
+</div>

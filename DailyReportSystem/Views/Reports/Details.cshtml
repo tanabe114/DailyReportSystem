@@ -85,58 +85,12 @@
             @Html.DisplayNameFor(model => model.ApprovalStatus)
         </dt>
 
-        <dd>
-            @Html.DisplayFor(model => model.ApprovalStatus)
-        </dd>
-
-        @if (!Model.IsReportCreater && Model.Approvable)
-        {
-            using (Html.BeginForm())
-            {
-                @Html.AntiForgeryToken()
-                @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
-                @Html.HiddenFor(model => model.EmployeeName)
-                <dd>
-
-                    @if (Model.ApprovalStatus == "承認済み")
-                    {
-                        <input type="submit" value="解除" class="btn btn-danger" />
-                    }
-                    else
-                    {
-                        <input type="submit" value="承認" class="btn btn-info" />
-                    }
-                </dd>
-            }
-        }
+        @Html.Partial("_Approval", Model)
 
         <dd>　</dd>
 
         <dd>
-            @foreach (var item in Model.ReactionFlag)
-            {
-                if (item.Value == true)
-                {
-                    using (Html.BeginForm("Delete", "Reactions"))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
-                        @Html.HiddenFor(modelitem => item.Key, new { Name = "Category" })
-                        <input type="submit" value="@Html.DisplayFor(model => model.ReactionString[item.Key])" class="btn btn-warning" />@Html.DisplayFor(model => model.ReactionQuantity[item.Key])　
-                    }
-                }
-                else
-                {
-                    using (Html.BeginForm("Create", "Reactions"))
-                    {
-                        @Html.AntiForgeryToken()
-                        @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
-                        @Html.HiddenFor(modelitem => item.Key, new { Name = "Category" })
-                        <input type="submit" value="@Html.DisplayFor(model => model.ReactionString[item.Key])"  class="btn btn-default" />@Html.DisplayFor(model => model.ReactionQuantity[item.Key])
-                    }
-                }
-
-            }
+            @Html.Partial("_ReactionForm", Model)
         </dd>
     </dl>
 </div>
@@ -149,3 +103,22 @@
 <p>
     @Html.ActionLink("一覧に戻る", "Index")
 </p>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script type="text/javascript">
+        function disableApprovalButton() {
+            $(".btn-approval").attr('disabled', 'disabled');
+        }
+        function enableApprovalButton() {
+            $(".btn-approval").removeAttr('disabled');
+        }
+
+        function disableReactionButton() {
+            $(".btn-reaction").attr('disabled', 'disabled');
+        }
+        function enableReactionButton() {
+            $(".btn-reaction").removeAttr('disabled');
+        }
+    </script>
+}

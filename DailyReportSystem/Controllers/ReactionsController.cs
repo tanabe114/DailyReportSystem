@@ -1,13 +1,11 @@
-﻿using System;
+﻿using DailyReportSystem.Models;
+using Microsoft.AspNet.Identity;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
-using DailyReportSystem.Models;
-using Microsoft.AspNet.Identity;
 
 namespace DailyReportSystem.Controllers
 {
@@ -74,16 +72,28 @@ namespace DailyReportSystem.Controllers
                 List<Reaction> reactions = db.Reactions
                     .Where(r => r.EmployeeId == UserId)
                     .ToList();
-                if(reactions != null)
+                if (reactions != null) //リアクション先あるなら
                 {
+                    //旧リアクションインスタンス生成＆検索
                     Reaction oldReaction = reactions.Find(r => r.ReportId == reaction.ReportId);
-                    if(oldReaction != null)
+                    //旧リアクションあるなら
+                    if (oldReaction != null)
                     {
                         //旧リアクション削除
                         DeleteReaction(oldReaction);
+
+                        //リアクション済みの種類と同種類のボタンがおされた
+                        if (oldReaction.Category == reaction.Category)
+                        {
+                            //ビュー更新
+                            ReportsDetailsViewModel plainDetailsViewModel = UpdateDetailsViewModel(reaction);
+                            //旧リアクション消すだけで処理終了(ビューに返す)
+                            return PartialView("_ReactionForm", plainDetailsViewModel);
+                        }
                     }
                 }
 
+                //新リアクション追加準備
                 reaction.EmployeeId = UserId;
                 reaction.CreatedAt = DateTime.Now;
 
@@ -91,8 +101,12 @@ namespace DailyReportSystem.Controllers
                 db.Reactions.Add(reaction);
                 //実際のDBに反映
                 db.SaveChanges();
-                //indexにRedirect（ページ遷移）
-                return RedirectToAction("Index");
+
+                //ビュー更新
+                ReportsDetailsViewModel detailsViewModel = UpdateDetailsViewModel(reaction);
+
+                //ビューに返す
+                return PartialView("_ReactionForm", detailsViewModel);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
@@ -104,49 +118,57 @@ namespace DailyReportSystem.Controllers
             db.SaveChanges();
         }
 
-        // POST: Reactions/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed([Bind(Include = "ReportId,Category")] Reaction reaction)
+        private ReportsDetailsViewModel UpdateDetailsViewModel(Reaction reaction)
         {
-            if(ModelState.IsValid)
+            //detailsビューモデル生成
+            Report report = db.Reports.Find(reaction.ReportId);
+            ReportsDetailsViewModel detailsViewModel = new ReportsDetailsViewModel
             {
-                //ログインしているユーザーID取得
-                string UserId = User.Identity.GetUserId();
+                Id = reaction.ReportId
+            };
+            string loginUserId = User.Identity.GetUserId();
 
-                //リアクション先一覧取得
-                List<Reaction> reactions = db.Reactions
-                    .Where(r => r.EmployeeId == UserId)
-                    .ToList();
-                if (reactions == null)
-                {
-                    return HttpNotFound();
-                }
+            //リアクション
+            //リアクション種類別GROUP分け
+            var reactionsCategory = db.Reactions
+                .Where(r => r.ReportId == report.Id)
+                .GroupBy(r => r.Category);
 
-                //解除したい行取得
-                Reaction reactionRecord = reactions.Find(r => r.ReportId == reaction.ReportId && r.Category == reaction.Category);
-                if (reactionRecord == null)
-                {
-                    return HttpNotFound();
-                }
+            var reactionQuantity = new Dictionary<string, int>();
+            var reactionFlag = new Dictionary<string, bool>();
+            var reactionString = new Dictionary<string, string>();
 
-                // 行削除
-                db.Reactions.Remove(reactionRecord);
-                db.SaveChanges();
-
-                return RedirectToAction("Index");
+            //Dictionary初期値設定(null防止)
+            foreach (ReactionCategoryEnum c in Enum.GetValues(typeof(ReactionCategoryEnum)))
+            {
+                reactionQuantity.Add(c.ToString(), 0);
+                reactionFlag.Add(c.ToString(), false);
             }
 
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        }
+            reactionString.Add("Like", "いいね");
+            reactionString.Add("Love", "超いいね");
+            reactionString.Add("Haha", "笑い");
+            reactionString.Add("Wow", "びっくり");
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
+            //Dictionaryに値設定
+            foreach (var rc in reactionsCategory)
             {
-                db.Dispose();
+                reactionQuantity[rc.Key] = rc.Count();
+                foreach (var r in rc)
+                {
+                    if (r.EmployeeId == loginUserId)
+                    {
+                        reactionFlag[rc.Key] = true;
+                    }
+                }
             }
-            base.Dispose(disposing);
+
+            detailsViewModel.ReactionQuantity = reactionQuantity;
+            detailsViewModel.ReactionFlag = reactionFlag;
+            detailsViewModel.ReactionString = reactionString;
+
+            //ビューに返す
+            return (detailsViewModel);
         }
     }
 }

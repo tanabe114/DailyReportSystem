@@ -209,12 +209,34 @@ namespace DailyReportSystem.Controllers
                 report.ApprovalStatus = 1;
             }
 
-            TempData["flush"] = report.ApprovalStatus == 1 ? $"{EmployeeName}さんの日報を承認しました。" : $"{EmployeeName}さんの日報の承認を解除しました。";
-
             db.Entry(report).State = EntityState.Modified;
             db.SaveChanges();
 
-            return RedirectToAction("Index");
+            ReportsDetailsViewModel detailsViewModel = new ReportsDetailsViewModel
+            {
+                Id = (int)ReportId
+            };
+
+            ApplicationUser reportUser = db.Users.Find(report.EmployeeId);
+            string loginUserId = User.Identity.GetUserId();
+
+            detailsViewModel.EmployeeName = reportUser.EmployeeName;
+            detailsViewModel.IsReportCreater = loginUserId == report.EmployeeId;
+            detailsViewModel.ApprovalStatus = report.ApprovalStatus == 1 ? "承認済み" : "未承認";
+
+            string reportUserRole = UserManager.GetRoles(reportUser.Id).Count() != 0 ? UserManager.GetRoles(reportUser.Id)[0] : "Normal";
+            string loginUserRole = UserManager.GetRoles(loginUserId).Count() != 0 ? UserManager.GetRoles(loginUserId)[0] : "Normal";
+
+            if (RolesEnumUtil.GetRoleNum(reportUserRole) < RolesEnumUtil.GetRoleNum(loginUserRole))
+            {
+                detailsViewModel.Approvable = true;
+            }
+            else
+            {
+                detailsViewModel.Approvable = false; 
+            }
+
+            return PartialView("_Approval", detailsViewModel);
         }
 
         // GET: Reports/Create

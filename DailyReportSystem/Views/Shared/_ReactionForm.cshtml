@@ -1,0 +1,29 @@
+﻿@model DailyReportSystem.Models.ReportsDetailsViewModel
+
+<div id="reactionCreateReplaceArea">
+    @foreach (var item in Model.ReactionFlag)
+    {
+        using (Ajax.BeginForm("Create", "Reactions", new AjaxOptions
+        {
+            InsertionMode = InsertionMode.Replace,
+            HttpMethod = "POST",
+            UpdateTargetId = "reactionCreateReplaceArea",
+            OnBegin = "disableReactionButton",
+            OnComplete = "enableReactionButton"
+        }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(model => model.Id, new { Name = "ReportId" })
+            @Html.HiddenFor(modelitem => item.Key, new { Name = "Category" })
+            if (item.Value == true)
+            {
+                <input type="submit" value="@Html.DisplayFor(model => model.ReactionString[item.Key])" class="btn btn-warning btn-reaction" />
+            }
+            else
+            {
+                <input type="submit" value="@Html.DisplayFor(model => model.ReactionString[item.Key])" class="btn btn-default btn-reaction" />
+            }
+            @Html.DisplayFor(model => model.ReactionQuantity[item.Key])
+        }
+    }
+</div>
